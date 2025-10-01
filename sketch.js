@@ -1,6 +1,6 @@
 let jello
 function preload(){
-    jello = loadImage('jello.jpg');
+    jello = loadImage('jello.gif');
 }
 
 function setup() 
