@@ -2,7 +2,12 @@ let backgroundColor;
 let jello
 
 // movement detection (using raw acceleration, tilt NOT removed)
-let movementThreshold = 0.6; // tune sensitivity (m/s²)
+// Made less sensitive: higher threshold + persistence + cooldown
+let movementThreshold = 1.2; // higher = less sensitive (m/s²)
+let consecutiveRequired = 3; // number of consecutive frames above threshold required
+let consecutiveAbove = 0;
+let lastTrigger = 0;
+let minInterval = 1000; // ms minimum time between triggers (cooldown)
 let lastMoved = 0;
 let showDuration = 1000; // ms to keep gif visible after movement (1 second)
 
@@ -34,11 +39,20 @@ function draw(){
         // magnitude of raw acceleration
         let totalAcceleration = sqrt(rawX * rawX + rawY * rawY + rawZ * rawZ);
 
-        // mark movement time when above threshold
+        // persistence + cooldown: require several consecutive frames above threshold
         if (totalAcceleration > movementThreshold) {
-            lastMoved = millis();
+            consecutiveAbove++;
+        } else {
+            consecutiveAbove = 0;
         }
 
+        // only trigger if sustained and cooldown passed
+        if (consecutiveAbove >= consecutiveRequired && (millis() - lastTrigger) > minInterval) {
+            lastMoved = millis();
+            lastTrigger = lastMoved;
+            consecutiveAbove = 0; // reset after triggering
+        }
+        
         // Current acceleration values
         fill(255);
         text("Device Acceleration (raw)", width/2, height/6);
