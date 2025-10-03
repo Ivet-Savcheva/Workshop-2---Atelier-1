@@ -4,7 +4,7 @@ let jello
 // movement detection (using raw acceleration, tilt NOT removed)
 let movementThreshold = 0.6; // tune sensitivity (m/s²)
 let lastMoved = 0;
-let showDuration = 800; // ms to keep gif visible after movement
+let showDuration = 3000; // ms to keep gif visible after movement (3 seconds)
 
 function preload(){
     jello = loadImage('jello.gif');
@@ -39,13 +39,6 @@ function draw(){
             lastMoved = millis();
         }
 
-        // show gif if recently moved
-        let showGif = (millis() - lastMoved) < showDuration;
-        if (showGif) {
-            // draw gif (adjust sizing/position as you want)
-            image(jello, 0, 0, width, height);
-        }
-
         // Current acceleration values
         fill(255);
         text("Device Acceleration (raw)", width/2, height/6);
@@ -76,6 +69,12 @@ function draw(){
         // instructions
         text("Move your device to make the GIF appear", width/2, height - 60);
         text("Shake, tilt, or move the device in different directions", width/2, height - 30);
+
+        // show gif if recently moved (drawn last so it covers the screen)
+        let showGif = (millis() - lastMoved) < showDuration;
+        if (showGif && jello) {
+            image(jello, 0, 0, width, height);
+        }
     } else {
         // motion sensors not available or permission not granted
         fill(255, 100, 100);
