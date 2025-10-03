@@ -4,7 +4,7 @@ let jello
 // movement detection (using raw acceleration, tilt NOT removed)
 let movementThreshold = 0.6; // tune sensitivity (m/s²)
 let lastMoved = 0;
-let showDuration = 3000; // ms to keep gif visible after movement (3 seconds)
+let showDuration = 1000; // ms to keep gif visible after movement (1 second)
 
 function preload(){
     jello = loadImage('jello.gif');
