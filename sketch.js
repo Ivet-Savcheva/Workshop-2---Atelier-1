@@ -1,8 +1,17 @@
 let backgroundColor;
+let jello
 
+// movement detection (using raw acceleration, tilt NOT removed)
+let movementThreshold = 0.6; // tune sensitivity (m/s²)
+let lastMoved = 0;
+let showDuration = 800; // ms to keep gif visible after movement
+
+function preload(){
+    jello = loadImage('jello.gif');
+}
 
 function setup() {
-	createCanvas(windowWidth, windowHeight);
+    createCanvas(windowWidth, windowHeight);
     backgroundColor = color(50, 50, 50);
     textAlign(CENTER, CENTER);
     textSize(16);
@@ -17,30 +26,46 @@ function draw(){
     // checking if motion sensors are available
     if (window.sensorsEnabled) {
 
+        // Read raw acceleration (may include gravity / tilt)
+        let rawX = accelerationX || 0;
+        let rawY = accelerationY || 0;
+        let rawZ = accelerationZ || 0;
+
+        // magnitude of raw acceleration
+        let totalAcceleration = sqrt(rawX * rawX + rawY * rawY + rawZ * rawZ);
+
+        // mark movement time when above threshold
+        if (totalAcceleration > movementThreshold) {
+            lastMoved = millis();
+        }
+
+        // show gif if recently moved
+        let showGif = (millis() - lastMoved) < showDuration;
+        if (showGif) {
+            // draw gif (adjust sizing/position as you want)
+            image(jello, 0, 0, width, height);
+        }
+
         // Current acceleration values
         fill(255);
-        text("Device Acceleration", width/2, height/6);
+        text("Device Acceleration (raw)", width/2, height/6);
 
         // Individual acceleration values
-        text("X: " + nf(accelerationX, 1, 2) + " m/s²", width/2, height/6 + 40);
-        text("Y: " + nf(accelerationY, 1, 2) + " m/s²", width/2, height/6 + 70);
-        text("Z: " + nf(accelerationZ, 1, 2) + " m/s²", width/2, height/6 + 100);
+        text("X: " + nf(rawX, 1, 2) + " m/s²", width/2, height/6 + 40);
+        text("Y: " + nf(rawY, 1, 2) + " m/s²", width/2, height/6 + 70);
+        text("Z: " + nf(rawZ, 1, 2) + " m/s²", width/2, height/6 + 100);
 
-        // Total acceleration magnitude using 3D distance formula
-        let totalAcceleration = sqrt(accelerationX * accelerationX + 
-                                   accelerationY * accelerationY + 
-                                   accelerationZ * accelerationZ);
         text("Total: " + nf(totalAcceleration, 1, 2) + " m/s²", width/2, height/6 + 140);
 
         // visuals (bars), replace with different shapes
         fill(255, 100, 100); // red for X
-        rect(width/2 - 120, height/2, map(abs(accelerationX), 0, 20, 0, 100), 20);
+        rect(width/2 - 120, height/2, map(abs(rawX), 0, 20, 0, 100), 20);
 
         fill(100, 255, 100); // green for Y
-        rect(width/2 - 120, height/2 + 30, map(abs(accelerationY), 0, 20, 0, 100), 20);
+        rect(width/2 - 120, height/2 + 30, map(abs(rawY), 0, 20, 0, 100), 20);
 
         fill(100, 100, 255); // blue for Z
-        rect(width/2 - 120, height/2 + 60, map(abs(accelerationZ), 0, 20, 0, 100), 20);
+        rect(width/2 - 120, height/2 + 60, map(abs(rawZ), 0, 20, 0, 100), 20);
         
         // labels for the bars
         fill(255);
@@ -49,9 +74,9 @@ function draw(){
         text("Z", width/2 - 140, height/2 + 70);
 
         // instructions
-        text("Move your device to see acceleration changes", width/2, height - 60);
+        text("Move your device to make the GIF appear", width/2, height - 60);
         text("Shake, tilt, or move the device in different directions", width/2, height - 30);
-    }else {
+    } else {
         // motion sensors not available or permission not granted
         fill(255, 100, 100);
         text("Motion sensors not available", width/2, height/2);
