@@ -1,6 +1,6 @@
 let backgroundColor;
 let jelloY; // GIF shown only for Y-axis movement
-let jelloZ; // GIF shows only fot Z-axis movement (splat gif)
+let jelloZ; // GIF shows only for Z-axis movement
 
 // movement detection using change (delta) between frames
 let movementThreshold = 1.5; // delta m/s² (less sensitive than per-frame raw)
@@ -17,17 +17,17 @@ let consecutiveY = 0;
 let lastTriggerY = 0;
 let minIntervalY = 1500;
 let lastMovedY = 0;
-let showDurationY = 1500; // 1.5 seconds for the Y-axis GIF
+let showDurationY = 3000; // 3 seconds for the Y-axis GIF
 
-// Y-axis specific settings (use delta on Y)
-let zMovementThreshold = 1.2; // delta on Y
+// Z-axis specific settings (use delta on Z)
+let zMovementThreshold = 1.8; // delta on Z (tune to be less sensitive)
 let consecutiveZ = 0;
 let lastTriggerZ = 0;
 let minIntervalZ = 1500;
 let lastMovedZ = 0;
-let showDurationZ = 2000; // 2 seconds for the Y-axis GIF
+let showDurationZ = 3000; // 3 seconds for the Z-axis GIF
 
-// state for delta calculations for y
+// state for delta calculations
 let prevTotal = 0;
 let prevY = 0;
 let prevZ = 0;
@@ -61,14 +61,19 @@ function draw(){
         // magnitude of raw acceleration
         let totalAcceleration = sqrt(rawX * rawX + rawY * rawY + rawZ * rawZ);
 
-        // persistence + cooldown: require several consecutive frames above threshold
-        if (totalAcceleration - prevTotal > movementThreshold) {
+        // delta from previous frame (reduces gravity problem)
+        let deltaTotal = abs(totalAcceleration - prevTotal);
+        let deltaY = abs(rawY - prevY);
+        let deltaZ = abs(rawZ - prevZ);
+
+        // persistence + cooldown: require several consecutive frames above threshold (general)
+        if (deltaTotal > movementThreshold) {
             consecutiveAbove++;
         } else {
             consecutiveAbove = 0;
         }
 
-        // only trigger if sustained and cooldown passed (general GIF)
+        // only trigger if sustained and cooldown passed (general GIF removed/optional)
         if (consecutiveAbove >= consecutiveRequired && (millis() - lastTrigger) > minInterval) {
             lastMoved = millis();
             lastTrigger = lastMoved;
@@ -76,7 +81,7 @@ function draw(){
         }
 
         // --- Y-axis only detection ---
-        if (abs(rawY - prevY) > yMovementThreshold) {
+        if (deltaY > yMovementThreshold) {
             consecutiveY++;
         } else {
             consecutiveY = 0;
@@ -86,19 +91,19 @@ function draw(){
             lastTriggerY = lastMovedY;
             consecutiveY = 0;
         }
-        
-        // --- Z-axis only detection ---
-        if (abs(rawZ - prevZ) > zMovementThreshold) {
+
+        // --- Z-axis only detection (new) ---
+        if (deltaZ > zMovementThreshold) {
             consecutiveZ++;
         } else {
             consecutiveZ = 0;
         }
-        if (consecutiveZ >= consecutiveRequired && (millis() - lastTriggerY) > minIntervalY) {
+        if (consecutiveZ >= consecutiveRequired && (millis() - lastTriggerZ) > minIntervalZ) {
             lastMovedZ = millis();
             lastTriggerZ = lastMovedZ;
             consecutiveZ = 0;
         }
-
+        
         // Current acceleration values
         fill(255);
         text("Device Acceleration (raw)", width/2, height/6);
@@ -130,21 +135,22 @@ function draw(){
         text("Move your device to make the GIF appear", width/2, height - 60);
         text("Shake, tilt, or move the device in different directions", width/2, height - 30);
 
-        // show gif if recently moved (drawn last so it covers the screen)
-        let showGif = (millis() - lastMoved) < showDuration;
-        if (showGif && jello) {
-            image(jello, 0, 0, width, height);
-        }
-
-        // Y-axis GIF takes priority (drawn last)
+        // Y-axis GIF (drawn before Z, Z will take priority if both triggered)
         let showYGif = (millis() - lastMovedY) < showDurationY;
         if (showYGif && jelloY) {
             image(jelloY, 0, 0, width, height);
         }
 
+        // Z-axis GIF (drawn last so it covers the screen when Z movement detected)
+        let showZGif = (millis() - lastMovedZ) < showDurationZ;
+        if (showZGif && jelloZ) {
+            image(jelloZ, 0, 0, width, height);
+        }
+
         // update previous values for delta calculation
         prevTotal = totalAcceleration;
         prevY = rawY;
+        prevZ = rawZ;
 
     } else {
         // motion sensors not available or permission not granted
