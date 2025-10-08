@@ -109,7 +109,7 @@ function draw(){
         
         // Current acceleration values
         fill(255);
-        text("jolt ur phone in an axis", width/2, height/6);
+        text("Device Acceleration (raw)", width/2, height/6);
 
         // Individual acceleration values
         text("X: " + nf(rawX, 1, 2) + " m/s²", width/2, height/6 + 40);
