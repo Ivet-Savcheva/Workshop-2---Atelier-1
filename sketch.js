@@ -24,9 +24,7 @@ let prevTotal = 0;
 let prevY = 0;
 
 function preload(){
-    jello = loadImage('Jello-up-down.gif');
-    // place your Y-axis GIF file in the project folder and update the filename below
-    jelloY = loadImage('Jello-y-only.gif');
+    jelloY = loadImage('Jello-up-down.gif');
 }
 
 function setup() {
