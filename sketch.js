@@ -1,6 +1,6 @@
 let backgroundColor;
-let jello
 let jelloY; // GIF shown only for Y-axis movement
+let jelloZ; // GIF shows only fot Z-axis movement (splat gif)
 
 // movement detection using change (delta) between frames
 let movementThreshold = 1.5; // delta m/s² (less sensitive than per-frame raw)
@@ -17,14 +17,24 @@ let consecutiveY = 0;
 let lastTriggerY = 0;
 let minIntervalY = 1500;
 let lastMovedY = 0;
-let showDurationY = 3000; // 3 seconds for the Y-axis GIF
+let showDurationY = 1500; // 1.5 seconds for the Y-axis GIF
 
-// state for delta calculations
+// Y-axis specific settings (use delta on Y)
+let zMovementThreshold = 1.2; // delta on Y
+let consecutiveZ = 0;
+let lastTriggerZ = 0;
+let minIntervalZ = 1500;
+let lastMovedZ = 0;
+let showDurationZ = 2000; // 2 seconds for the Y-axis GIF
+
+// state for delta calculations for y
 let prevTotal = 0;
 let prevY = 0;
+let prevZ = 0;
 
 function preload(){
     jelloY = loadImage('Jello-up-down.gif');
+    jelloZ = loadImage('jello-splat.gif');
 }
 
 function setup() {
@@ -77,6 +87,18 @@ function draw(){
             consecutiveY = 0;
         }
         
+        // --- Z-axis only detection ---
+        if (abs(rawZ - prevZ) > zMovementThreshold) {
+            consecutiveZ++;
+        } else {
+            consecutiveZ = 0;
+        }
+        if (consecutiveZ >= consecutiveRequired && (millis() - lastTriggerY) > minIntervalY) {
+            lastMovedZ = millis();
+            lastTriggerZ = lastMovedZ;
+            consecutiveZ = 0;
+        }
+
         // Current acceleration values
         fill(255);
         text("Device Acceleration (raw)", width/2, height/6);
