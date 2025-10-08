@@ -4,7 +4,7 @@ let jelloY; // GIF shown only for Y-axis movement
 
 // movement detection (using raw acceleration, tilt NOT removed)
 // Made less sensitive: higher threshold + persistence + cooldown
-let movementThreshold = 10.0; // higher = less sensitive (m/s²)
+let movementThreshold = 50.0; // higher = less sensitive (m/s²)
 let consecutiveRequired = 3; // number of consecutive frames above threshold required
 let consecutiveAbove = 0;
 let lastTrigger = 0;
