@@ -2,26 +2,31 @@ let backgroundColor;
 let jello
 let jelloY; // GIF shown only for Y-axis movement
 
-// movement detection (using raw acceleration, tilt NOT removed)
-// Made less sensitive: higher threshold + persistence + cooldown
-let movementThreshold = 50.0; // higher = less sensitive (m/s²)
-let consecutiveRequired = 3; // number of consecutive frames above threshold required
+// movement detection using change (delta) between frames
+let movementThreshold = 1.5; // delta m/s² (less sensitive than per-frame raw)
+let consecutiveRequired = 4; // require several frames
 let consecutiveAbove = 0;
 let lastTrigger = 0;
-let minInterval = 1000; // ms minimum time between triggers (cooldown)
+let minInterval = 1500; // ms cooldown
 let lastMoved = 0;
-let showDuration = 1000; // ms to keep gif visible after movement (1 second)
+let showDuration = 3000; // ms to keep gif visible after movement
 
-// Y-axis specific settings
-let yMovementThreshold = 1.0; // threshold specifically for Y axis
+// Y-axis specific settings (use delta on Y)
+let yMovementThreshold = 1.2; // delta on Y
 let consecutiveY = 0;
 let lastTriggerY = 0;
-let minIntervalY = 1000;
+let minIntervalY = 1500;
 let lastMovedY = 0;
 let showDurationY = 3000; // 3 seconds for the Y-axis GIF
 
+// state for delta calculations
+let prevTotal = 0;
+let prevY = 0;
+
 function preload(){
-    jelloY = loadImage('Jello-up-down.gif');
+    jello = loadImage('Jello-up-down.gif');
+    // place your Y-axis GIF file in the project folder and update the filename below
+    jelloY = loadImage('Jello-y-only.gif');
 }
 
 function setup() {
@@ -49,7 +54,7 @@ function draw(){
         let totalAcceleration = sqrt(rawX * rawX + rawY * rawY + rawZ * rawZ);
 
         // persistence + cooldown: require several consecutive frames above threshold
-        if (totalAcceleration > movementThreshold) {
+        if (totalAcceleration - prevTotal > movementThreshold) {
             consecutiveAbove++;
         } else {
             consecutiveAbove = 0;
@@ -63,7 +68,7 @@ function draw(){
         }
 
         // --- Y-axis only detection ---
-        if (abs(rawY) > yMovementThreshold) {
+        if (abs(rawY - prevY) > yMovementThreshold) {
             consecutiveY++;
         } else {
             consecutiveY = 0;
@@ -116,6 +121,10 @@ function draw(){
         if (showYGif && jelloY) {
             image(jelloY, 0, 0, width, height);
         }
+
+        // update previous values for delta calculation
+        prevTotal = totalAcceleration;
+        prevY = rawY;
 
     } else {
         // motion sensors not available or permission not granted
