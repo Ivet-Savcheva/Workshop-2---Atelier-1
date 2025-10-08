@@ -12,7 +12,7 @@ let lastMoved = 0;
 let showDuration = 1000; // ms to keep gif visible after movement (1 second)
 
 function preload(){
-    jello = loadImage('jello.gif');
+    jello = loadImage('Jello-up-down.gif');
 }
 
 function setup() {
