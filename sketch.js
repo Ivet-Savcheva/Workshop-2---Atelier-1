@@ -1,6 +1,7 @@
 let backgroundColor;
 let jelloY; // GIF shown only for Y-axis movement
 let jelloZ; // GIF shows only for Z-axis movement
+let jello;  // optional general GIF (not required)
 
 // movement detection using change (delta) between frames
 let movementThreshold = 1.5; // delta m/s² (less sensitive than per-frame raw)
@@ -34,7 +35,9 @@ let prevZ = 0;
 
 function preload(){
     jelloY = loadImage('Jello-up-down.gif');
-    jelloZ = loadImage('jello-splat.gif');
+    jelloZ = loadImage('Jello-z-only.gif');
+    // optional: load a general gif if you want one
+    // jello = loadImage('Jello-general.gif');
 }
 
 function setup() {
