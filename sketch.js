@@ -4,7 +4,7 @@ let jelloY; // GIF shown only for Y-axis movement
 
 // movement detection (using raw acceleration, tilt NOT removed)
 // Made less sensitive: higher threshold + persistence + cooldown
-let movementThreshold = 2.0; // higher = less sensitive (m/s²)
+let movementThreshold = 10.0; // higher = less sensitive (m/s²)
 let consecutiveRequired = 3; // number of consecutive frames above threshold required
 let consecutiveAbove = 0;
 let lastTrigger = 0;
@@ -21,9 +21,7 @@ let lastMovedY = 0;
 let showDurationY = 3000; // 3 seconds for the Y-axis GIF
 
 function preload(){
-    jello = loadImage('Jello-up-down.gif');
-    // place your Y-axis GIF file in the project folder and update the filename below
-    jelloY = loadImage('Jello-y-only.gif');
+    jelloY = loadImage('Jello-up-down.gif');
 }
 
 function setup() {
