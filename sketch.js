@@ -164,10 +164,5 @@ function draw(){
     }
 }
 
-function touchStarted(){
-    return false;
-}
-
-function touchEnded(){
-    return false;
-}
+function touchStarted(){    return false;}
+function touchEnded(){    return false;}
