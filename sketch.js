@@ -35,7 +35,7 @@ let prevZ = 0;
 
 function preload(){
     jelloY = loadImage('Jello-up-down.gif');
-    jelloZ = loadImage('Jello-splat.gif');
+    jelloZ = loadImage('Jellosplat.gif');
     // optional: load a general gif if you want one
     // jello = loadImage('Jello-general.gif');
 }
