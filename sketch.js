@@ -94,6 +94,9 @@ function draw(){
             lastMovedY = millis();
             lastTriggerY = lastMovedY;
             consecutiveY = 0;
+            // give Y priority: suppress Z immediately when Y triggers
+            lastMovedZ = 0;
+            lastTriggerZ = millis();
         }
 
         // --- Z-axis only detection (new) ---
@@ -146,8 +149,9 @@ function draw(){
         }
 
         // Z-axis GIF (drawn last so it covers the screen when Z movement detected)
+        // Do not draw Z if Y is currently showing (Y has priority)
         let showZGif = (millis() - lastMovedZ) < showDurationZ;
-        if (showZGif && jelloZ) {
+        if (!showYGif && showZGif && jelloZ) {
             image(jelloZ, 0, 0, width, height);
         }
 
