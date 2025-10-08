@@ -26,7 +26,7 @@ let consecutiveZ = 0;
 let lastTriggerZ = 0;
 let minIntervalZ = 1500;
 let lastMovedZ = 0;
-let showDurationZ = 3000; // 3 seconds for the Z-axis GIF
+let showDurationZ = 2000; // 3 seconds for the Z-axis GIF
 
 // state for delta calculations
 let prevTotal = 0;
