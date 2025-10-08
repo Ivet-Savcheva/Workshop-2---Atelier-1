@@ -21,13 +21,12 @@ let lastMovedY = 0;
 let showDurationY = 3000; // 3 seconds for the Y-axis GIF
 
 // Z-axis specific settings (use delta on Z)
-let zMovementThreshold = 3.2; // delta on Z (increase to make less sensitive)
-let consecutiveRequiredZ = 5; // require more consecutive frames for Z
+let zMovementThreshold = 1.8; // delta on Z (tune to be less sensitive)
 let consecutiveZ = 0;
 let lastTriggerZ = 0;
 let minIntervalZ = 1500;
 let lastMovedZ = 0;
-let showDurationZ = 2000; // ms the Z GIF stays visible
+let showDurationZ = 3000; // 3 seconds for the Z-axis GIF
 
 // state for delta calculations
 let prevTotal = 0;
@@ -94,9 +93,6 @@ function draw(){
             lastMovedY = millis();
             lastTriggerY = lastMovedY;
             consecutiveY = 0;
-            // give Y priority: suppress Z immediately when Y triggers
-            lastMovedZ = 0;
-            lastTriggerZ = millis();
         }
 
         // --- Z-axis only detection (new) ---
@@ -105,7 +101,7 @@ function draw(){
         } else {
             consecutiveZ = 0;
         }
-        if (consecutiveZ >= consecutiveRequiredZ && (millis() - lastTriggerZ) > minIntervalZ) {
+        if (consecutiveZ >= consecutiveRequired && (millis() - lastTriggerZ) > minIntervalZ) {
             lastMovedZ = millis();
             lastTriggerZ = lastMovedZ;
             consecutiveZ = 0;
@@ -113,7 +109,7 @@ function draw(){
         
         // Current acceleration values
         fill(255);
-        text("Device Acceleration (raw)", width/2, height/6);
+        text("jolt ur phone in an axis", width/2, height/6);
 
         // Individual acceleration values
         text("X: " + nf(rawX, 1, 2) + " m/s²", width/2, height/6 + 40);
@@ -149,9 +145,8 @@ function draw(){
         }
 
         // Z-axis GIF (drawn last so it covers the screen when Z movement detected)
-        // Do not draw Z if Y is currently showing (Y has priority)
         let showZGif = (millis() - lastMovedZ) < showDurationZ;
-        if (!showYGif && showZGif && jelloZ) {
+        if (showZGif && jelloZ) {
             image(jelloZ, 0, 0, width, height);
         }
 
