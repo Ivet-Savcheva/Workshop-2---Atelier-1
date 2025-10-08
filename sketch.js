@@ -21,12 +21,13 @@ let lastMovedY = 0;
 let showDurationY = 3000; // 3 seconds for the Y-axis GIF
 
 // Z-axis specific settings (use delta on Z)
-let zMovementThreshold = 1.8; // delta on Z (tune to be less sensitive)
+let zMovementThreshold = 3.2; // delta on Z (increase to make less sensitive)
+let consecutiveRequiredZ = 5; // require more consecutive frames for Z
 let consecutiveZ = 0;
 let lastTriggerZ = 0;
 let minIntervalZ = 1500;
 let lastMovedZ = 0;
-let showDurationZ = 2000; // 3 seconds for the Z-axis GIF
+let showDurationZ = 2000; // ms the Z GIF stays visible
 
 // state for delta calculations
 let prevTotal = 0;
@@ -101,7 +102,7 @@ function draw(){
         } else {
             consecutiveZ = 0;
         }
-        if (consecutiveZ >= consecutiveRequired && (millis() - lastTriggerZ) > minIntervalZ) {
+        if (consecutiveZ >= consecutiveRequiredZ && (millis() - lastTriggerZ) > minIntervalZ) {
             lastMovedZ = millis();
             lastTriggerZ = lastMovedZ;
             consecutiveZ = 0;
