@@ -1,9 +1,10 @@
 let backgroundColor;
 let jello
+let jelloY; // GIF shown only for Y-axis movement
 
 // movement detection (using raw acceleration, tilt NOT removed)
 // Made less sensitive: higher threshold + persistence + cooldown
-let movementThreshold = 1.2; // higher = less sensitive (m/s²)
+let movementThreshold = 2.0; // higher = less sensitive (m/s²)
 let consecutiveRequired = 3; // number of consecutive frames above threshold required
 let consecutiveAbove = 0;
 let lastTrigger = 0;
@@ -11,8 +12,18 @@ let minInterval = 1000; // ms minimum time between triggers (cooldown)
 let lastMoved = 0;
 let showDuration = 1000; // ms to keep gif visible after movement (1 second)
 
+// Y-axis specific settings
+let yMovementThreshold = 1.0; // threshold specifically for Y axis
+let consecutiveY = 0;
+let lastTriggerY = 0;
+let minIntervalY = 1000;
+let lastMovedY = 0;
+let showDurationY = 3000; // 3 seconds for the Y-axis GIF
+
 function preload(){
     jello = loadImage('Jello-up-down.gif');
+    // place your Y-axis GIF file in the project folder and update the filename below
+    jelloY = loadImage('Jello-y-only.gif');
 }
 
 function setup() {
@@ -46,11 +57,23 @@ function draw(){
             consecutiveAbove = 0;
         }
 
-        // only trigger if sustained and cooldown passed
+        // only trigger if sustained and cooldown passed (general GIF)
         if (consecutiveAbove >= consecutiveRequired && (millis() - lastTrigger) > minInterval) {
             lastMoved = millis();
             lastTrigger = lastMoved;
             consecutiveAbove = 0; // reset after triggering
+        }
+
+        // --- Y-axis only detection ---
+        if (abs(rawY) > yMovementThreshold) {
+            consecutiveY++;
+        } else {
+            consecutiveY = 0;
+        }
+        if (consecutiveY >= consecutiveRequired && (millis() - lastTriggerY) > minIntervalY) {
+            lastMovedY = millis();
+            lastTriggerY = lastMovedY;
+            consecutiveY = 0;
         }
         
         // Current acceleration values
@@ -89,6 +112,13 @@ function draw(){
         if (showGif && jello) {
             image(jello, 0, 0, width, height);
         }
+
+        // Y-axis GIF takes priority (drawn last)
+        let showYGif = (millis() - lastMovedY) < showDurationY;
+        if (showYGif && jelloY) {
+            image(jelloY, 0, 0, width, height);
+        }
+
     } else {
         // motion sensors not available or permission not granted
         fill(255, 100, 100);
