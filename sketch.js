@@ -8,7 +8,7 @@ let movementThreshold = 1.5; // delta m/s² (less sensitive than per-frame raw)
 let consecutiveRequired = 4; // require several frames
 let consecutiveAbove = 0;
 let lastTrigger = 0;
-let minInterval = 1500; // ms cooldown
+let minInterval = 500; // ms cooldown
 let lastMoved = 0;
 let showDuration = 3000; // ms to keep gif visible after movement
 
@@ -16,7 +16,7 @@ let showDuration = 3000; // ms to keep gif visible after movement
 let yMovementThreshold = 1.2; // delta on Y
 let consecutiveY = 0;
 let lastTriggerY = 0;
-let minIntervalY = 1500;
+let minIntervalY = 500;
 let lastMovedY = 0;
 let showDurationY = 3000; // 3 seconds for the Y-axis GIF
 
@@ -24,12 +24,13 @@ let showDurationY = 3000; // 3 seconds for the Y-axis GIF
 let zMovementThreshold = 1.8; // delta on Z (tune to be less sensitive)
 let consecutiveZ = 0;
 let lastTriggerZ = 0;
-let minIntervalZ = 1500;
+let minIntervalZ = 500;
 let lastMovedZ = 0;
 let showDurationZ = 3000; // 3 seconds for the Z-axis GIF
 
 // state for delta calculations
 let prevTotal = 0;
+let prevX = 0;
 let prevY = 0;
 let prevZ = 0;
 
@@ -65,12 +66,14 @@ function draw(){
         let totalAcceleration = sqrt(rawX * rawX + rawY * rawY + rawZ * rawZ);
 
         // delta from previous frame (reduces gravity problem)
-        let deltaTotal = abs(totalAcceleration - prevTotal);
+        //let deltaTotal = abs(totalAcceleration - prevTotal);
+        let deltaX = abs(rawX - prevX);
         let deltaY = abs(rawY - prevY);
         let deltaZ = abs(rawZ - prevZ);
 
         // persistence + cooldown: require several consecutive frames above threshold (general)
-        if (deltaTotal > movementThreshold) {
+        //if (deltaTotal > movementThreshold) {
+        if (deltaX > movementThreshold) {
             consecutiveAbove++;
         } else {
             consecutiveAbove = 0;
@@ -139,7 +142,7 @@ function draw(){
         text("Shake, tilt, or move the device in different directions", width/2, height - 30);
 
         // Y-axis GIF (drawn before Z, Z will take priority if both triggered)
-        let showYGif = (millis() - lastMovedY) < showDurationY;
+        let showYGif = (millis() - lastMovedY) < showDurationY || (millis() - lastMoved) < showDuration;
         if (showYGif && jelloY) {
             image(jelloY, 0, 0, width, height);
         }
@@ -152,6 +155,7 @@ function draw(){
 
         // update previous values for delta calculation
         prevTotal = totalAcceleration;
+        prevX = rawX;
         prevY = rawY;
         prevZ = rawZ;
 
