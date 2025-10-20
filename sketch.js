@@ -138,8 +138,8 @@ function draw(){
         text("Z", width/2 - 140, height/2 + 70);
 
         // instructions
-        text("Move your device to make the GIF appear", width/2, height - 60);
-        text("Shake, tilt, or move the device in different directions", width/2, height - 30);
+        text("Shake your device to make the GIF appear", width/2, height - 60);
+        text("Shake or 'drop' ur phone", width/2, height - 30);
 
         // Y-axis GIF (drawn before Z, Z will take priority if both triggered)
         let showYGif = (millis() - lastMovedY) < showDurationY || (millis() - lastMoved) < showDuration;
